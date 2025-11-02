@@ -1,0 +1,32 @@
+#include <zephyr/dt-bindings/zmk/matrix_transform.h>
+
+/ {
+    chosen {
+        zmk,kscan = &kscan0;
+    };
+
+    kscan0: kscan {
+        compatible = "zmk,kscan-gpio-matrix";
+        diode-direction = "col2row"; // O "row2col", dependiendo de cómo soldaste los diodos
+
+        row-gpios
+            = <&gpio0 2 (GPIO_ACTIVE_HIGH)> // Pin para la Fila 1
+            , <&gpio0 3 (GPIO_ACTIVE_HIGH)> // Pin para la Fila 2
+            , <&gpio0 4 (GPIO_ACTIVE_HIGH)> // Pin para la Fila 3
+            , <&gpio0 5 (GPIO_ACTIVE_HIGH)> // Pin para la Fila 4
+            ;
+
+        col-gpios
+            = <&gpio1 0 (GPIO_ACTIVE_HIGH)> // Pin para la Columna 1
+            , <&gpio1 1 (GPIO_ACTIVE_HIGH)> // ... y así hasta 10 columnas
+            , <&gpio1 2 (GPIO_ACTIVE_HIGH)>
+            , <&gpio1 3 (GPIO_ACTIVE_HIGH)>
+            , <&gpio1 4 (GPIO_ACTIVE_HIGH)>
+            , <&gpio1 5 (GPIO_ACTIVE_HIGH)>
+            , <&gpio1 6 (GPIO_ACTIVE_HIGH)>
+            , <&gpio1 7 (GPIO_ACTIVE_HIGH)>
+            , <&gpio0 29 (GPIO_ACTIVE_HIGH)>
+            , <&gpio0 30 (GPIO_ACTIVE_HIGH)>
+            ;
+    };
+};
