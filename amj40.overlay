@@ -41,4 +41,40 @@
         // --- FIN DE LA SECCIÓN DE PINES ---
     };
 };
+&pinctrl {
+    spi0_default: spi0_default {
+        group1 {
+            // ¡EDITA ESTE PIN! Usa el pin al que conectaste la DATA de los LEDs.
+            // Este es solo un ejemplo usando el pin 8 (P0.08).
+            psels = <NRF_PSEL(SPIM_MOSI, 0, 8)>;
+        };
+    };
+};
 
+&spi0 {
+    compatible = "nordic,nrf-spim";
+    status = "okay";
+    mosi-pin = <8>; // El mismo número de pin que usaste arriba.
+};
+
+/ {
+    // Dentro de la sección raíz, añade la definición de la tira de LEDs.
+    chosen {
+        // ... (la línea zmk,kscan = &kscan0; ya debería estar aquí) ...
+        zmk,underglow = &led_strip; // Le decimos a ZMK que use nuestra tira de LEDs.
+    };
+
+    led_strip: led_strip {
+        compatible = "worldsemi,ws2812-spi";
+        label = "WS2812";
+
+        // Conecta la tira al bus SPI que definimos arriba.
+        chain-length = <10>; // ¡EDITA ESTO! El número total de LEDs en tu tira.
+        spi-dev = <&spi0>;
+        color-mapping = <
+            LED_COLOR_ID_GREEN
+            LED_COLOR_ID_RED
+            LED_COLOR_ID_BLUE
+        >;
+    };
+};
