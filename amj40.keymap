@@ -53,3 +53,15 @@
         };
     };
 };
+/* En tu symbols_layer dentro de amj40.keymap */
+
+        symbols_layer {
+            label = "Symbols";
+            bindings = <
+/* Col 0        Col 1        Col 2        Col 3        Col 4        Col 5        Col 6        Col 7        Col 8        Col 9 */
+&rgb_ug_tog    &rgb_ug_brd  &rgb_ug_bri  &none        &none        &none        &none        &none        &none        &none
+&rgb_ug_eff    &rgb_ug_efs  &none        &none        &none        &none        &none        &none        &none        &none
+&rgb_ug_hued   &rgb_ug_huei &rgb_ug_satd &rgb_ug_sati &none        &none        &none        &none        &none        &none
+&trans         &trans       &trans       &trans       &trans       &trans       &trans       &none        &none        &none
+            >;
+        };
