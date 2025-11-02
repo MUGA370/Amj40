@@ -1,32 +1,44 @@
+/* Archivo: amj40.overlay */
+
 #include <zephyr/dt-bindings/zmk/matrix_transform.h>
 
 / {
+    // Elige el "kscan" (escaneo de teclado) que usaremos.
     chosen {
         zmk,kscan = &kscan0;
     };
 
+    // Define el servicio de escaneo de la matriz.
     kscan0: kscan {
         compatible = "zmk,kscan-gpio-matrix";
-        diode-direction = "col2row"; // O "row2col", dependiendo de cómo soldaste los diodos
+        
+        // IMPORTANTE: Dirección de los diodos.
+        // "col2row" es lo más común. Si las teclas no responden, cambia a "row2col".
+        diode-direction = "col2row";
 
-        row-gpios
-            = <&gpio0 2 (GPIO_ACTIVE_HIGH)> // Pin para la Fila 1
-            , <&gpio0 3 (GPIO_ACTIVE_HIGH)> // Pin para la Fila 2
-            , <&gpio0 4 (GPIO_ACTIVE_HIGH)> // Pin para la Fila 3
-            , <&gpio0 5 (GPIO_ACTIVE_HIGH)> // Pin para la Fila 4
-            ;
-
+        // --- ¡EDITA ESTA SECCIÓN CON TUS PINES! ---
+        // Lista de los pines del microcontrolador conectados a las COLUMNAS.
         col-gpios
-            = <&gpio1 0 (GPIO_ACTIVE_HIGH)> // Pin para la Columna 1
-            , <&gpio1 1 (GPIO_ACTIVE_HIGH)> // ... y así hasta 10 columnas
-            , <&gpio1 2 (GPIO_ACTIVE_HIGH)>
-            , <&gpio1 3 (GPIO_ACTIVE_HIGH)>
-            , <&gpio1 4 (GPIO_ACTIVE_HIGH)>
-            , <&gpio1 5 (GPIO_ACTIVE_HIGH)>
-            , <&gpio1 6 (GPIO_ACTIVE_HIGH)>
-            , <&gpio1 7 (GPIO_ACTIVE_HIGH)>
-            , <&gpio0 29 (GPIO_ACTIVE_HIGH)>
-            , <&gpio0 30 (GPIO_ACTIVE_HIGH)>
+            = <&pro_micro 10 (GPIO_ACTIVE_HIGH)>  // Col 0
+            , <&pro_micro 16 (GPIO_ACTIVE_HIGH)>  // Col 1
+            , <&pro_micro 14 (GPIO_ACTIVE_HIGH)>  // Col 2
+            , <&pro_micro 15 (GPIO_ACTIVE_HIGH)>  // Col 3
+            , <&pro_micro 18 (GPIO_ACTIVE_HIGH)>  // Col 4
+            , <&pro_micro 19 (GPIO_ACTIVE_HIGH)>  // Col 5
+            , <&pro_micro 20 (GPIO_ACTIVE_HIGH)>  // Col 6
+            , <&pro_micro 21 (GPIO_ACTIVE_HIGH)>  // Col 7
+            , <&pro_micro 6 (GPIO_ACTIVE_HIGH)>   // Col 8
+            , <&pro_micro 7 (GPIO_ACTIVE_HIGH)>   // Col 9
             ;
+
+        // Lista de los pines del microcontrolador conectados a las FILAS.
+        row-gpios
+            = <&pro_micro 2 (GPIO_ACTIVE_HIGH)>   // Fila 0 (la de arriba)
+            , <&pro_micro 3 (GPIO_ACTIVE_HIGH)>   // Fila 1
+            , <&pro_micro 4 (GPIO_ACTIVE_HIGH)>   // Fila 2
+            , <&pro_micro 5 (GPIO_ACTIVE_HIGH)>   // Fila 3
+            ;
+        // --- FIN DE LA SECCIÓN DE PINES ---
     };
 };
+
