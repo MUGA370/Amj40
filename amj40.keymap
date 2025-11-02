@@ -1,0 +1,55 @@
+/* Archivo: amj40.keymap */
+
+#include <behaviors.dtsi>
+#include <dt-bindings/zmk/keys.h>
+#include <dt-bindings/zmk/bt.h>
+
+/* --- CAPA 0: BASE (QWERTY) --- */
+#define BASE 0
+#define SYMBOLS 1 // Damos un nombre a la capa 1 para que sea más fácil de leer
+
+/ {
+    // --- COMPORTAMIENTOS PERSONALIZADOS (Behaviors) ---
+    // Aquí definimos nuestros activadores de capa.
+    behaviors {
+        // Creamos un comportamiento "hold-tap" para la tecla de espacio.
+        // Tap: envía ESPACIO. Hold: activa la capa SYMBOLS.
+        spc_sym: space_symbols {
+            compatible = "zmk,behavior-hold-tap";
+            label = "SPACE_OR_SYMBOLS";
+            #binding-cells = <0>;
+            tapping-term-ms = <280>; // Tiempo en ms para decidir si es tap o hold.
+            flavor = "tap-preferred"; // Prefiere "tap" si la acción es ambigua.
+            bindings = <&kp>, <&mo>; // <tap_action>, <hold_action>
+        };
+    };
+
+    // --- MAPA DE TECLAS (Keymap) ---
+    keymap {
+        compatible = "zmk,keymap";
+
+        /* --- CAPA 0: BASE (QWERTY) --- */
+        base_layer {
+            label = "Base";
+            bindings = <
+/* Col 0  Col 1  Col 2  Col 3  Col 4  Col 5  Col 6  Col 7  Col 8  Col 9 */
+&kp Q    &kp W    &kp E    &kp R    &kp T    &kp Y    &kp U    &kp I    &kp O    &kp P
+&kp A    &kp S    &kp D    &kp F    &kp G    &kp H    &kp J    &kp K    &kp L    &kp SEMI
+&kp Z    &kp X    &kp C    &kp V    &kp B    &kp N    &kp M    &kp COMMA &kp DOT   &none
+&none    &none    &kp LCTRL &kp LGUI  &kp LALT  &spc_sym  &kp BSPC  &none    &none    &none // ¡Aquí usamos nuestro behavior!
+            >;
+        };
+
+        /* --- CAPA 1: SÍMBOLOS Y NÚMEROS --- */
+        symbols_layer {
+            label = "Symbols";
+            bindings = <
+/* Col 0  Col 1  Col 2  Col 3  Col 4  Col 5  Col 6  Col 7  Col 8  Col 9 */
+&kp N1   &kp N2   &kp N3   &kp N4   &kp N5   &kp N6   &kp N7   &kp N8   &kp N9   &kp N0
+&kp EXCL &kp AT   &kp HASH &kp DLLR &kp PRCNT &kp CARET &kp AMPR &kp ASTRK &kp LPAR &kp RPAR
+&kp GRAVE &kp TILDE &kp PIPE &kp BSLH &kp LBRC &kp RBRC &kp LCBR &kp RCBR &kp EQUAL &none
+&none    &none    &trans    &trans    &trans    &trans    &trans    &none    &none    &none
+            >;
+        };
+    };
+};
