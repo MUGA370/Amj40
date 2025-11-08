@@ -16,21 +16,73 @@ jobs:
       
     - name: Configurar entorno QMK
       run: |
-        # Aquí van los comandos para instalar QMK
+        # Instalar dependencias de QMK
         echo "Instalando dependencias de QMK..."
+        sudo apt-get update
+        sudo apt-get install -y git python3 python3-pip
+        pip3 install qmk
+        qmk setup -y
         
     - name: Compilar firmware
+      id: compile
       run: |
-        # Comandos para compilar tu firmware
-        echo "Compilando firmware..."
-        # Ejemplo: qmk compile -kb nice_nano_v2 -km revium941
+        # El directorio de trabajo de QMK es generalmente el directorio raíz del repositorio.
+        # Asumiendo que el archivo keymap está en la estructura estándar de QMK (e.g., qmk_firmware/keyboards/nice_nano_v2/keymaps/revium941)
+        # Necesitas saber la ruta exacta de tu keymap.
+        # **IMPORTANTE:** Reemplaza 'nice_nano_v2' y 'revium941' con tu teclado y keymap reales.
+        KEYBOARD="nice_nano_v2"
+        KEYMAP="revium941"
+        
+        echo "Compilando firmware para ${KEYBOARD}/${KEYMAP}..."
+        
+        # El comando qmk compile debe ejecutarse desde el directorio donde se encuentra el firmware QMK.
+        # Si el repositorio es solo el keymap, necesitarás clonar el firmware QMK completo o usar el comando qmk compile
+        # que asume que estás en el directorio raíz del firmware QMK.
+        # Para simplificar, asumiremos que el repositorio contiene la estructura de QMK o que el comando qmk compile
+        # se ejecutará correctamente después de qmk setup.
+        
+        qmk compile -kb ${KEYBOARD} -km ${KEYMAP}
+        
+        # Determinar la ruta del archivo de firmware generado.
+        # QMK guarda el archivo .hex o .bin en el directorio raíz del firmware QMK o en el directorio .build.
+        # La ruta exacta depende de la versión de QMK y del teclado.
+        # Una ruta común es: .build/{keyboard}_{keymap}.hex
+        # O: qmk_firmware/.build/{keyboard}_{keymap}.hex
+        
+        # Buscaremos el archivo generado y lo moveremos a la raíz del repositorio para facilitar la subida.
+        # Esto es crucial para que el paso 'upload-artifact' lo encuentre.
+        
+        FIRMWARE_FILE=$(find . -name "${KEYBOARD}_${KEYMAP}.hex" -o -name "${KEYBOARD}_${KEYMAP}.bin" -o -name "${KEYBOARD}_${KEYMAP}.uf2" | head -n 1)
+        
+        if [ -z "$FIRMWARE_FILE" ]; then
+          echo "Error: No se encontró el archivo de firmware después de la compilación."
+          exit 1
+        fi
+        
+        echo "Archivo de firmware encontrado: ${FIRMWARE_FILE}"
+        
+        # Mover el archivo a la raíz del repositorio con un nombre más genérico para la subida
+        cp "${FIRMWARE_FILE}" firmware.hex || cp "${FIRMWARE_FILE}" firmware.bin || cp "${FIRMWARE_FILE}" firmware.uf2
+        
+        # Establecer el nombre del archivo para el siguiente paso
+        if [ -f firmware.hex ]; then
+          echo "firmware_path=firmware.hex" >> $GITHUB_OUTPUT
+        elif [ -f firmware.bin ]; then
+          echo "firmware_path=firmware.bin" >> $GITHUB_OUTPUT
+        elif [ -f firmware.uf2 ]; then
+          echo "firmware_path=firmware.uf2" >> $GITHUB_OUTPUT
+        else
+          echo "Error: No se pudo mover el archivo de firmware a la raíz."
+          exit 1
+        fi
         
     - name: Subir firmware como artifact
       uses: actions/upload-artifact@v4
       with:
         name: firmware
+        # Usamos la ruta específica del archivo que movimos en el paso anterior
         path: |
-          *.hex
-          *.bin
-          *.uf2
+          firmware.hex
+          firmware.bin
+          firmware.uf2
         retention-days: 30
